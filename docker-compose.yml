@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  traefik:
+    image: traefik:v2.5
+    container_name: traefik
+    command:
+      - "--certificatesResolvers.letsEncrypt.acme.email=${EMAIL}"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./config/traefik.yml:/etc/traefik/traefik.yml
+      - ./config/provider.yml:/etc/traefik/provider.yml
+      - ./.htpasswd:/etc/.htpasswd
+      - ./data/acme:/etc/traefik/acme
+      - ./data/log:/var/log/traefik
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traefik.rule=Host(`${HOST}`)
+      - traefik.http.routers.traefik.middlewares=auth@file
+      - traefik.http.routers.traefik.service=api@internal
+    networks:
+      - web
+      - traefik
+networks:
+  web:
+    external: true
+  traefik:
+    external: false
+    name: traefik

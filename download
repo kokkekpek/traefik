@@ -1,0 +1,4 @@
+#!/bin/bash
+# Ubuntu
+wget -q https://raw.githubusercontent.com/kokkekpek/traefik/master/.env.example -O .env
+wget -q https://raw.githubusercontent.com/kokkekpek/traefik/master/.htpasswd.example -O .htpasswd

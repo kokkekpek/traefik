@@ -1,0 +1,89 @@
+# Config for v2.5
+# Official documentation
+# @see https://doc.traefik.io/traefik/v2.5/
+
+# Static Configuration
+# @see https://doc.traefik.io/traefik/v2.5/reference/static-configuration/file/
+global:
+  checkNewVersion: false
+  sendAnonymousUsage: false
+
+# Enabling the docker provider
+# @see https://doc.traefik.io/traefik/v2.5/providers/docker/
+providers:
+  docker:
+    # Expose containers by default through Traefik.
+    # If set to false, containers that don't have a traefik.enable=true label
+    # will be ignored from the resulting routing configuration.
+    # @see https://doc.traefik.io/traefik/v2.5/providers/docker/#exposedbydefault
+    exposedByDefault: false
+
+    # Defines a default docker network to use for connections to all containers.
+    # This option can be overridden on a container basis with the traefik.docker.network label.
+    # @see https://doc.traefik.io/traefik/v2.5/providers/docker/#network
+    network: traefik
+
+  # Good Old Configuration File
+  # @see https://doc.traefik.io/traefik/v2.5/providers/file/
+  file:
+    # Defines the path to the configuration file.
+    # @see https://doc.traefik.io/traefik/v2.5/providers/file/#filename
+    filename: /etc/traefik/provider.yml
+
+# HTTPS redirection (80 to 443)
+# @see https://doc.traefik.io/traefik/v2.5/routing/entrypoints/
+entryPoints:
+  web:
+    address: :80
+  webSecure:
+    address: :443
+
+# Enable ACME (Let's Encrypt): automatic SSL
+# @see https://doc.traefik.io/traefik/v2.5/https/acme/
+certificatesResolvers:
+  letsEncrypt:
+    acme:
+      # File or key used for certificates storage.
+      storage: /etc/traefik/acme/acme.json
+
+      # Use https on a simple service exposed with Traefik
+      httpChallenge:
+        entryPoint: web
+
+# Writing logs to a file
+# @see https://doc.traefik.io/traefik/v2.5/observability/logs/
+log:
+  # By default, the logs are written to the standard output.
+  # You can configure a file path instead using the filePath option.
+  filePath: /var/log/traefik/traefik.log
+
+  # By default, the logs use a text format (common),
+  # but you can also ask for the json format in the format option
+  format: json
+
+  # By default, the level is set to ERROR
+  # Alternative logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO
+  level: ERROR
+
+# Enable the access logs.
+# By default, logs are written to stdout, in text format
+# @see https://doc.traefik.io/traefik/v2.5/observability/access-logs/
+accessLog:
+  # By default access logs are written to the standard output.
+  # To write the logs into a log file, use the filePath option
+  filePath: /var/log/traefik/access.log
+
+  # By default, the logs use a text format (common),
+  # but you can also ask for the json format in the format option
+  format: json
+
+# If you enable the API, a new special service
+# named api@internal is created and can then be referenced in a router
+# @see https://doc.traefik.io/traefik/v2.5/operations/api/
+api:
+  # Enable the API in insecure mode, which means that
+  # the API will be available directly on the entryPoint named traefik
+  insecure: false
+
+  # Enable the dashboard
+  dashboard: true
