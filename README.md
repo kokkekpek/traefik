@@ -23,6 +23,7 @@ nano .env
 
 ### Change password for admin
 ```sh
+sudo apt install apache2-utils -y
 htpasswd .htpasswd admin
 ```
 `admin:admin` by default

@@ -9,9 +9,6 @@ sudo apt-add-repository ppa:git-core/ppa -y
 sudo apt update
 sudo apt install git -y
 
-# apache2-utils for htpasswd command
-sudo apt install apache2-utils -y
-
 # Docker
 sudo apt install apt-transport-https ca-certificates curl software-properties-common -y
 wget -qO - https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
