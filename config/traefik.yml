@@ -46,9 +46,8 @@ certificatesResolvers:
       # File or key used for certificates storage.
       storage: /etc/traefik/acme/acme.json
 
-      # Use https on a simple service exposed with Traefik
-      httpChallenge:
-        entryPoint: web
+      # Use a TLS-ALPN-01 ACME challenge.
+      tlsChallenge: {}
 
 # Writing logs to a file
 # @see https://doc.traefik.io/traefik/v2.5/observability/logs/
