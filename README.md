@@ -35,8 +35,8 @@ wget -qO - https://raw.githubusercontent.com/kokkekpek/traefik/master/install | 
 
 ## Run local and manually
 ### Requirements
-* [Docker](https://www.docker.com)
-* [Docker compose 19.03.0+](https://docs.docker.com/compose)
+* [Docker](https://www.docker.com) `^20.x`
+* [Docker Compose](https://docs.docker.com/compose) `^1.29.x`
 * [GIT](https://git-scm.com)
 * [apache2-utils](http://httpd.apache.org)
 
@@ -46,6 +46,7 @@ git clone https://github.com/kokkekpek/traefik.git
 cd traefik
 cp .env.example .env
 cp .htpasswd.example .htpasswd
+htpasswd .htpasswd admin
 docker network create web
 docker-compose --env-file .env up -d
 ```
