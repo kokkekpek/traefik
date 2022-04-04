@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   traefik:
-    image: traefik:v2.5
+    image: traefik:v2.6.3
     container_name: traefik
     command:
       - "--certificatesResolvers.letsEncrypt.acme.email=${EMAIL}"
