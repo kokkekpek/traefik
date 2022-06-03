@@ -37,8 +37,10 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.jaeger.rule=Host(`${JAEGER}`)
+      - traefik.http.routers.jaeger.middlewares=auth@file
       - traefik.http.routers.jaeger.entrypoints=web
       - traefik.http.routers.jaegerSecure.rule=Host(`${JAEGER}`)
+      - traefik.http.routers.jaegerSecure.middlewares=auth@file
       - traefik.http.routers.jaegerSecure.entrypoints=webSecure
       - traefik.http.routers.jaegerSecure.tls.certresolver=letsEncrypt
       - traefik.http.services.jaeger.loadbalancer.server.port=16686
@@ -58,8 +60,10 @@ services:
     labels:
       - traefik.enable=true
       - traefik.http.routers.whoami.rule=Host(`${WHOAMI}`)
+      - traefik.http.routers.whoami.middlewares=auth@file
       - traefik.http.routers.whoami.entrypoints=web
       - traefik.http.routers.whoamiSecure.rule=Host(`${WHOAMI}`)
+      - traefik.http.routers.whoamiSecure.middlewares=auth@file
       - traefik.http.routers.whoamiSecure.entrypoints=webSecure
       - traefik.http.routers.whoamiSecure.tls.certresolver=letsEncrypt
     networks:
