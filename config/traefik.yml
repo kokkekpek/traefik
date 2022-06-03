@@ -85,3 +85,36 @@ api:
 
   # Enable the dashboard
   dashboard: true
+
+# Visualize the Requests Flow
+# @see https://doc.traefik.io/traefik/observability/tracing/overview
+tracing:
+
+  # Service name used in selected backend
+  # @see https://doc.traefik.io/traefik/observability/tracing/overview/#servicename
+  serviceName: traefik
+
+  # Span name limit allows for name truncation in case of very long names.
+  # This can prevent certain tracing providers to drop traces that exceed their length limits
+  # @see https://doc.traefik.io/traefik/observability/tracing/overview/#spannamelimit
+  spanNameLimit: 150
+
+  # To enable the Jaeger tracer
+  # @see https://doc.traefik.io/traefik/observability/tracing/jaeger
+  jaeger:
+
+    # Address of the Jaeger Agent HTTP sampling server
+    # @see https://doc.traefik.io/traefik/observability/tracing/jaeger/#samplingserverurl
+    samplingServerURL: http://jaeger:5778/sampling
+
+    # Local Agent Host Port instructs the reporter to send spans to the Jaeger Agent at this address (host:port)
+    # @see https://doc.traefik.io/traefik/observability/tracing/jaeger/#localagenthostport
+    localAgentHostPort: jaeger:6831
+
+    # Collector
+    # @see https://doc.traefik.io/traefik/observability/tracing/jaeger/#collector
+    collector:
+      endpoint: http://jaeger:14268/api/traces?format=jaeger.thrift
+
+      user: developer
+      password: developer
