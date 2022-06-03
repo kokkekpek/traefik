@@ -1,11 +1,11 @@
 # Middlewares
-# @see https://doc.traefik.io/traefik/v2.6/middlewares/overview
+# @see https://doc.traefik.io/traefik/v2.7/middlewares/overview
 http:
   middlewares:
     # The BasicAuth middleware is a quick way to restrict access to your services to known users.
-    # @see https://doc.traefik.io/traefik/v2.6/middlewares/http/basicauth
+    # @see https://doc.traefik.io/traefik/v2.7/middlewares/http/basicauth
     auth:
       basicAuth:
         # The usersFile option is the path to an external file that contains the authorized users for the middleware.
-        # @see https://doc.traefik.io/traefik/v2.6/middlewares/http/basicauth/#usersfile
+        # @see https://doc.traefik.io/traefik/v2.7/middlewares/http/basicauth/#usersfile
         usersFile: /etc/.htpasswd
