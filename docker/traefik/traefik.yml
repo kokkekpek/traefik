@@ -36,6 +36,8 @@ entryPoints:
     address: :80
   webSecure:
     address: :443
+  metrics:
+    address: :8082
 
 # Enable ACME (Let's Encrypt): automatic SSL
 # @see https://doc.traefik.io/traefik/https/acme
@@ -118,3 +120,15 @@ tracing:
 
       user: developer
       password: developer
+
+metrics:
+  prometheus:
+    buckets:
+      - 1
+      - 3
+      - 12
+      - 50
+    addEntryPointsLabels: true
+    addRoutersLabels : true
+    addServicesLabels: true
+    entryPoint: metrics

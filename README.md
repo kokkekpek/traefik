@@ -48,5 +48,5 @@ cp .env.example .env
 cp .htpasswd.example .htpasswd
 htpasswd .htpasswd admin
 docker network create web
-docker-compose --env-file .env up -d
+docker compose --env-file .env up -d
 ```
