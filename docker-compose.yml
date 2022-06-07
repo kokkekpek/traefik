@@ -10,50 +10,40 @@ services:
       - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./config/traefik.yml:/etc/traefik/traefik.yml
-      - ./config/provider.yml:/etc/traefik/provider.yml
+      - ./docker/traefik/traefik.yml:/etc/traefik/traefik.yml
+      - ./docker/traefik/provider.yml:/etc/traefik/provider.yml
       - ./.htpasswd:/etc/.htpasswd
-      - ./data/acme:/etc/traefik/acme
-      - ./data/log:/var/log/traefik
+      - ./data/traefik/acme:/etc/traefik/acme
+      - ./data/traefik/log:/var/log/traefik
     labels:
       - traefik.enable=true
+
       - traefik.http.routers.traefik.rule=Host(`${TRAEFIK}`)
       - traefik.http.routers.traefik.middlewares=auth@file
       - traefik.http.routers.traefik.service=api@internal
-      - traefik.http.routers.traefik.entrypoints=web
+      - traefik.http.routers.traefik.entryPoints=web
+
       - traefik.http.routers.traefikSecure.rule=Host(`${TRAEFIK}`)
       - traefik.http.routers.traefikSecure.middlewares=auth@file
       - traefik.http.routers.traefikSecure.service=api@internal
-      - traefik.http.routers.traefikSecure.entrypoints=webSecure
-      - traefik.http.routers.traefikSecure.tls.certresolver=letsEncrypt
+      - traefik.http.routers.traefikSecure.entryPoints=webSecure
+      - traefik.http.routers.traefikSecure.tls.certResolver=letsEncrypt
+
+      - traefik.http.routers.traefikPrometheus.rule=Host(`${TRAEFIK_METRICS}`)
+      - traefik.http.routers.traefikPrometheus.middlewares=auth@file
+      - traefik.http.routers.traefikPrometheus.service=prometheus@internal
+      - traefik.http.routers.traefikPrometheus.entryPoints=web
+      - traefik.http.services.traefikPrometheus.loadbalancer.server.port=8082
+
+      - traefik.http.routers.traefikPrometheusSecure.rule=Host(`${TRAEFIK_METRICS}`)
+      - traefik.http.routers.traefikPrometheusSecure.middlewares=auth@file
+      - traefik.http.routers.traefikPrometheusSecure.service=prometheus@internal
+      - traefik.http.routers.traefikPrometheusSecure.entryPoints=webSecure
+      - traefik.http.routers.traefikPrometheusSecure.tls.certResolver=letsEncrypt
+      - traefik.http.services.traefikPrometheusSecure.loadbalancer.server.port=8082
     networks:
       - web
       - traefik
-  jaeger:
-    image: jaegertracing/all-in-one:1.35.1
-    container_name: jaeger
-    environment:
-      COLLECTOR_ZIPKIN_HTTP_PORT: 9411
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.jaeger.rule=Host(`${JAEGER}`)
-      - traefik.http.routers.jaeger.middlewares=auth@file
-      - traefik.http.routers.jaeger.entrypoints=web
-      - traefik.http.routers.jaegerSecure.rule=Host(`${JAEGER}`)
-      - traefik.http.routers.jaegerSecure.middlewares=auth@file
-      - traefik.http.routers.jaegerSecure.entrypoints=webSecure
-      - traefik.http.routers.jaegerSecure.tls.certresolver=letsEncrypt
-      - traefik.http.services.jaeger.loadbalancer.server.port=16686
-    networks:
-      - traefik
-      - jaeger
-    expose:
-      - "5775:5775/udp"
-      - "6831:6831/udp"
-      - "6832:6832/udp"
-      - "5778:5778"
-      - "14268:14268"
-      - "9411:9411"
   whoami:
     image: traefik/whoami:v1.8.0
     container_name: whoami
@@ -61,11 +51,12 @@ services:
       - traefik.enable=true
       - traefik.http.routers.whoami.rule=Host(`${WHOAMI}`)
       - traefik.http.routers.whoami.middlewares=auth@file
-      - traefik.http.routers.whoami.entrypoints=web
+      - traefik.http.routers.whoami.entryPoints=web
+
       - traefik.http.routers.whoamiSecure.rule=Host(`${WHOAMI}`)
       - traefik.http.routers.whoamiSecure.middlewares=auth@file
-      - traefik.http.routers.whoamiSecure.entrypoints=webSecure
-      - traefik.http.routers.whoamiSecure.tls.certresolver=letsEncrypt
+      - traefik.http.routers.whoamiSecure.entryPoints=webSecure
+      - traefik.http.routers.whoamiSecure.tls.certResolver=letsEncrypt
     networks:
       - traefik
 networks:
@@ -74,6 +65,3 @@ networks:
   traefik:
     external: false
     name: traefik
-  jaeger:
-    external: false
-    name: jaeger
