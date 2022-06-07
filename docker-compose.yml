@@ -36,14 +36,14 @@ services:
       - traefik.http.routers.traefikPrometheus.middlewares=auth@file
       - traefik.http.routers.traefikPrometheus.service=prometheus@internal
       - traefik.http.routers.traefikPrometheus.entryPoints=web
-      - traefik.http.services.traefikPrometheus.loadbalancer.server.port=8082
 
       - traefik.http.routers.traefikPrometheusSecure.rule=Host(`${TRAEFIK_METRICS}`)
       - traefik.http.routers.traefikPrometheusSecure.middlewares=auth@file
       - traefik.http.routers.traefikPrometheusSecure.service=prometheus@internal
       - traefik.http.routers.traefikPrometheusSecure.entryPoints=webSecure
       - traefik.http.routers.traefikPrometheusSecure.tls.certResolver=letsEncrypt
-      - traefik.http.services.traefikPrometheusSecure.loadbalancer.server.port=8082
+
+      - traefik.http.services.traefik.loadbalancer.server.port=8082
   whoami:
     image: traefik/whoami:v1.8.0
     container_name: whoami
@@ -83,6 +83,35 @@ services:
       - traefik.http.routers.nodeExporterSecure.middlewares=auth@file
       - traefik.http.routers.nodeExporterSecure.entryPoints=webSecure
       - traefik.http.routers.nodeExporterSecure.tls.certResolver=letsEncrypt
+
+      - traefik.http.services.nodeExporter.loadbalancer.server.port=9100
+  prometheus:
+    image: prom/prometheus:v2.35.0
+    container_name: prometheus
+    user: root
+    networks:
+      - traefik
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./data/prometheus:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.prometheus.rule=Host(`${PROMETHEUS}`)
+      - traefik.http.routers.prometheus.middlewares=auth@file
+      - traefik.http.routers.prometheus.entryPoints=web
+
+      - traefik.http.routers.prometheusSecure.rule=Host(`${PROMETHEUS}`)
+      - traefik.http.routers.prometheusSecure.middlewares=auth@file
+      - traefik.http.routers.prometheusSecure.entryPoints=webSecure
+      - traefik.http.routers.prometheusSecure.tls.certResolver=letsEncrypt
+
+      - traefik.http.services.prometheus.loadbalancer.server.port=9090
 networks:
   web:
     external: true
