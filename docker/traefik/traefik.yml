@@ -121,14 +121,31 @@ tracing:
       user: developer
       password: developer
 
+# Enable the Prometheus
+# @see https://doc.traefik.io/traefik/observability/metrics/prometheus
 metrics:
   prometheus:
+
+    # Buckets for latency metrics
+    # @see https://doc.traefik.io/traefik/observability/metrics/prometheus/#buckets
     buckets:
       - 1
       - 3
       - 12
       - 50
+
+    # Enable metrics on entry points
+    # @see https://doc.traefik.io/traefik/observability/metrics/prometheus/#addentrypointslabels
     addEntryPointsLabels: true
+
+    # Enable metrics on routers
+    # @see https://doc.traefik.io/traefik/observability/metrics/prometheus/#addrouterslabels
     addRoutersLabels : true
+
+    # Enable metrics on services
+    # @see https://doc.traefik.io/traefik/observability/metrics/prometheus/#addserviceslabels
     addServicesLabels: true
+
+    # Entry point used to expose metrics
+    # @see https://doc.traefik.io/traefik/observability/metrics/prometheus/#entrypoint
     entryPoint: metrics
