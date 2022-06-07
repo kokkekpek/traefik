@@ -3,11 +3,12 @@ services:
   traefik:
     image: traefik:v2.7.0
     container_name: traefik
-    command:
-      - "--certificatesResolvers.letsEncrypt.acme.email=${EMAIL}"
     ports:
       - "80:80"
       - "443:443"
+    networks:
+      - web
+      - traefik
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./docker/traefik/traefik.yml:/etc/traefik/traefik.yml
@@ -15,6 +16,8 @@ services:
       - ./.htpasswd:/etc/.htpasswd
       - ./data/traefik/acme:/etc/traefik/acme
       - ./data/traefik/log:/var/log/traefik
+    command:
+      - "--certificatesResolvers.letsEncrypt.acme.email=${EMAIL}"
     labels:
       - traefik.enable=true
 
@@ -41,12 +44,11 @@ services:
       - traefik.http.routers.traefikPrometheusSecure.entryPoints=webSecure
       - traefik.http.routers.traefikPrometheusSecure.tls.certResolver=letsEncrypt
       - traefik.http.services.traefikPrometheusSecure.loadbalancer.server.port=8082
-    networks:
-      - web
-      - traefik
   whoami:
     image: traefik/whoami:v1.8.0
     container_name: whoami
+    networks:
+      - traefik
     labels:
       - traefik.enable=true
       - traefik.http.routers.whoami.rule=Host(`${WHOAMI}`)
@@ -57,8 +59,30 @@ services:
       - traefik.http.routers.whoamiSecure.middlewares=auth@file
       - traefik.http.routers.whoamiSecure.entryPoints=webSecure
       - traefik.http.routers.whoamiSecure.tls.certResolver=letsEncrypt
+  nodeExporter:
+    image: prom/node-exporter:v1.3.1
+    container_name: node-exporter
     networks:
       - traefik
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.nodeExporter.rule=Host(`${NODE_EXPORTER}`)
+      - traefik.http.routers.nodeExporter.middlewares=auth@file
+      - traefik.http.routers.nodeExporter.entryPoints=web
+
+      - traefik.http.routers.nodeExporterSecure.rule=Host(`${NODE_EXPORTER}`)
+      - traefik.http.routers.nodeExporterSecure.middlewares=auth@file
+      - traefik.http.routers.nodeExporterSecure.entryPoints=webSecure
+      - traefik.http.routers.nodeExporterSecure.tls.certResolver=letsEncrypt
 networks:
   web:
     external: true
